@@ -1,10 +1,13 @@
 use sea_orm_migration::prelude::*;
 
-use crate::{CreateTableExt, TimestampIden};
+use crate::{AlterTableExt, TimestampIden};
 
-impl CreateTableExt for TableCreateStatement {
-    fn with_timestamps(&mut self) -> &mut TableCreateStatement {
-        self.col(
+impl AlterTableExt for TableAlterStatement {
+    fn add_timestamps<T>(&mut self, table: T) -> &mut TableAlterStatement
+    where
+        T: IntoTableRef,
+    {
+        self.add_column_if_not_exists(
             ColumnDef::new(TimestampIden::CreatedAt)
                 .default(Expr::current_timestamp())
                 .not_null()
@@ -13,8 +16,7 @@ impl CreateTableExt for TableCreateStatement {
 
         cfg_if::cfg_if! {
             if #[cfg(any(feature = "postgres", feature = "sqlite"))] {
-                let table_name = self.get_table_name().expect("Call `table(Iden)` before calling `with_timestamps()`");
-                let table_name = if let TableRef::Table(table_name) = table_name {
+                let table_name = if let TableRef::Table(table_name) = table.into_table_ref() {
                     table_name.to_string()
                 } else {
                     panic!("Unexpected table name! Make a fork to fix this :p")
@@ -23,7 +25,7 @@ impl CreateTableExt for TableCreateStatement {
         }
         cfg_if::cfg_if! {
             if #[cfg(feature = "postgres")] {
-                self.col(
+                self.add_column_if_not_exists(
                     ColumnDef::new(TimestampIden::UpdatedAt)
                         .default(Expr::current_timestamp())
                         .not_null()
@@ -44,7 +46,7 @@ impl CreateTableExt for TableCreateStatement {
                         .timestamp(),
                 )
             } else if #[cfg(feature = "mysql")] {
-                self.col(
+                self.add_column_if_not_exists(
                     ColumnDef::new(TimestampIden::UpdatedAt)
                         .default(Expr::current_timestamp())
                         .extra("ON UPDATE CURRENT_TIMESTAMP".to_string())
@@ -53,7 +55,7 @@ impl CreateTableExt for TableCreateStatement {
                 )
             } else if  #[cfg(feature = "sqlite")] {
                 let updated_at = TimestampIden::UpdatedAt.to_string();
-                self.col(
+                self.add_column_if_not_exists(
                     ColumnDef::new(TimestampIden::UpdatedAt)
                         .default(Expr::current_timestamp())
                         .not_null()
