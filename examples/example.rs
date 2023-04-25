@@ -1,5 +1,5 @@
 use sea_orm_migration::prelude::*;
-use sea_orm_migration_timestamps::TimestampExt;
+use sea_orm_migration_timestamps::CreateTableExt;
 
 #[derive(Iden)]
 enum ExampleTable {
