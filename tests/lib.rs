@@ -43,7 +43,7 @@ mod tests {
             .with_timestamps()
             .take();
 
-        let query = table.to_string(MySqlQueryBuilder);
+        let query = table.to_string(MysqlQueryBuilder);
         assert_ne!(query, "");
     }
 

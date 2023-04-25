@@ -8,7 +8,7 @@ enum ExampleTable {
 }
 
 fn main() {
-    Table::create()
+    let table = Table::create()
         .table(ExampleTable::Table)
         .col(
             ColumnDef::new(ExampleTable::Id)
@@ -17,6 +17,7 @@ fn main() {
                 .auto_increment()
                 .primary_key(),
         )
-        .with_timestamps()
-        .take();
+        .with_timestamps();
+
+    println!("{}", table.to_string(PostgresQueryBuilder));
 }
