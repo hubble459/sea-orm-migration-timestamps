@@ -86,7 +86,7 @@ impl TimestampExt for TableCreateStatement {
                         .timestamp(),
                 )
             } else {
-                compile_error!("Select one of the three features [postgres, mysql, sqlite]");
+                compile_error!("Select one of the three features [postgres, mysql, sqlite]")
             }
         }
     }
